@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const instructorModel = require("../models/instructorModel");
 
 courseSchema = new Schema({
   title: { type: String, required: true },

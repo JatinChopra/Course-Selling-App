@@ -166,6 +166,10 @@ router.post("/login", async (req, res) => {
 // 	POST /api/instructors/apply: Submit details to become an instructor (requires authentication).
 //  Response  : a success message or an error
 router.post("/instructor/apply", verifyJWT, async (req, res) => {
+  if (req.user.isInstructor) {
+    return res.json({ message: "Already an instructor" });
+  }
+
   try {
     const instructorData = new instructorModel(req.body);
     await instructorData.save();
