@@ -7,6 +7,7 @@ courseSchema = new Schema({
   description: { type: String, required: true },
   price: { type: Number, required: true },
   instructor: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  chapters: [{ type: Schema.Types.ObjectId, ref: "Chapter" }],
 });
 
 const Course = mongoose.model("Course", courseSchema);

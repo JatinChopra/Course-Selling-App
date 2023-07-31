@@ -19,7 +19,7 @@ const isAlphaNum = (value) => {
 
 // sendResponse(status,message) : sends a response to the client with specified status
 // code and message
-const sendResponse = (status, message) => {
+const sendResponse = (res, status, message) => {
   return res.status(status).json({
     message: message,
   });
@@ -27,14 +27,16 @@ const sendResponse = (status, message) => {
 
 // courseFieldValidator(title,description,price) => validates the value of course fields and
 // if they contains invalid characters then handle the response itself
-const courseFieldsValidator = ({ title, description, price }) => {
-  let responseSent = false;
+const courseFieldsValidator = (req, res, next) => {
+  // let responseSent = false;
+  const { title, description, price } = req.body;
 
   // only check if the specified fiels are there
   if (title && !isAlphaNum(title)) {
     // validate the title of course
-    responseSent = true;
+    // responseSent = true;
     return sendResponse(
+      res,
       400,
       "Title could only contain alphanumeric characters"
     );
@@ -42,8 +44,9 @@ const courseFieldsValidator = ({ title, description, price }) => {
 
   if (description && !isAlphaNum(description)) {
     // validate the description of the cours
-    responseSent = true;
+    // responseSent = true;
     return sendResponse(
+      res,
       400,
       "Description could only contain alphanumeric characters"
     );
@@ -51,12 +54,12 @@ const courseFieldsValidator = ({ title, description, price }) => {
 
   if (price && !validator.isFloat(price)) {
     // validate the price of course
-    responseSent = true;
-    return sendResponse(400, "Provide valid value course price");
+    // responseSent = true;
+    return sendResponse(res, 400, "Provide valid value course price");
   }
 
   // returns if response was handeled by this function or not
-  return responseSent;
+  next();
 };
 
 // Routes
@@ -84,7 +87,7 @@ router.get("/courses:id", async (req, res) => {
 });
 
 // POST /api/courses: Create a new course (requires authentication as an instructor).
-router.post("/courses", verifyJWT, async (req, res) => {
+router.post("/courses", courseFieldsValidator, verifyJWT, async (req, res) => {
   if (req.user.isInstructor) {
     // verify if the current user is an instructor or not
 
@@ -98,33 +101,33 @@ router.post("/courses", verifyJWT, async (req, res) => {
         .json({ message: "Please fill the required fields." });
     }
 
-    const responseSent = courseFieldsValidator({ title, description, price }); //validate the new course fields
+    // const responseSent = courseFieldsValidator({ title, description, price }); //validate the new course fields
 
-    if (!responseSent) {
-      // if response is not alreayd handled by the helper function then proceed further
+    // if (!responseSent) {
+    // if response is not alreayd handled by the helper function then proceed further
 
-      // create a new course document
-      const newCourse = new courseModel({
-        ...req.body,
-        instructor: req.user._id,
-      });
+    // create a new course document
+    const newCourse = new courseModel({
+      ...req.body,
+      instructor: req.user._id,
+    });
 
-      // save the course document in the collection
-      const courseSaveResult = await newCourse.save();
+    // save the course document in the collection
+    const courseSaveResult = await newCourse.save();
 
-      // fetch the instructor document
-      const instructorInstance = await instructorModel.findOne({
-        _id: req.user.instructorAccount._id,
-      });
+    // fetch the instructor document
+    const instructorInstance = await instructorModel.findOne({
+      _id: req.user.instructorAccount._id,
+    });
 
-      // update the coursesOffered in instructor document
-      instructorInstance.coursesOffered.push(courseSaveResult._id);
+    // update the coursesOffered in instructor document
+    instructorInstance.coursesOffered.push(courseSaveResult._id);
 
-      // save the updated instructor document
-      await instructorInstance.save();
+    // save the updated instructor document
+    await instructorInstance.save();
 
-      res.json({ message: "Course added successfully" });
-    }
+    res.json({ message: "Course added successfully" });
+    // }
   } else {
     res
       .status(403)
@@ -133,18 +136,22 @@ router.post("/courses", verifyJWT, async (req, res) => {
 });
 
 // PUT /api/courses/:id: Update course details (requires jwt token and need to be an instructor).
-router.put("/courses/:id", verifyJWT, async (req, res) => {
-  const courseDoc = await courseModel.findOne({ _id: req.params.id }); // fetch the couse document by id
+router.put(
+  "/courses/:id",
+  verifyJWT,
+  courseFieldsValidator,
+  async (req, res) => {
+    const courseDoc = await courseModel.findOne({ _id: req.params.id }); // fetch the couse document by id
 
-  // verify
-  // 1- if current user is an instructor
-  // 2- if the courseinstructor id is equal to current instructor id
-  if (
-    req.user.isInstructor &&
-    JSON.stringify(req.user._id) === JSON.stringify(courseDoc.instructor)
-  ) {
-    const responseSent = courseFieldsValidator(req.body); // validate the new info
-    if (!responseSent) {
+    // verify
+    // 1- if current user is an instructor
+    // 2- if the courseinstructor id is equal to current instructor id
+    if (
+      req.user.isInstructor &&
+      JSON.stringify(req.user._id) === JSON.stringify(courseDoc.instructor)
+    ) {
+      // const responseSent = courseFieldsValidator(res, req.body); // validate the new info
+      // if (!responseSent) {
       // proceed further if response was not handled by the helper function
       try {
         // make changes to the db
@@ -163,12 +170,13 @@ router.put("/courses/:id", verifyJWT, async (req, res) => {
           .status(500)
           .json({ message: "Internal server error while updating a course" });
       }
+      // }
+    } else {
+      // send 403 if user is not an instructor
+      res.status(403).json({ message: "You cannot update this course" });
     }
-  } else {
-    // send 403 if user is not an instructor
-    res.status(403).json({ message: "You cannot update this course" });
   }
-});
+);
 
 // DELETE /api/courses/:id: Delete a course (requires authentication as an instructor)
 // detetes a course and also remove the course entry from the instructor object
