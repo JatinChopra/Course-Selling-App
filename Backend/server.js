@@ -29,6 +29,7 @@ connectToDB();
 const authentication = require("./src/routes/authentication");
 const course = require("./src/routes/course");
 const managecourse = require("./src/routes/managecourse");
+const upload = require("./src/routes/upload");
 
 // Register middleware
 app.use(morgan("dev")); // logging middleware
@@ -38,3 +39,4 @@ app.use(express.json()); // json parsing
 app.use("/api/auth", authentication);
 app.use("/api", course);
 app.use("/api", managecourse);
+app.use("/api", upload);
