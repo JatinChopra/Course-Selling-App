@@ -3,10 +3,10 @@ const userModel = require("../models/userModel");
 require("dotenv").config();
 
 const verifyJWT = async (req, res, next) => {
-  const token = req.headers.authorization.replace("Bearer ", "");
-  let decoded = "";
   // verify the token
   try {
+    const token = req.headers.authorization.replace("Bearer ", "");
+    let decoded = "";
     decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await userModel.findOne({ username: decoded.username });

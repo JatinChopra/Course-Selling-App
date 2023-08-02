@@ -4,6 +4,9 @@ const morgan = require("morgan");
 const PORT = 5000;
 require("dotenv").config();
 const mongoose = require("mongoose");
+const cors = require("cors");
+
+app.use(cors);
 
 // Establish connection to mango db instance
 const connectToDB = async () => {
@@ -30,6 +33,7 @@ const authentication = require("./src/routes/authentication");
 const course = require("./src/routes/course");
 const managecourse = require("./src/routes/managecourse");
 const upload = require("./src/routes/upload");
+const mylearning = require("./src/routes/mylearning");
 
 // Register middleware
 app.use(morgan("dev")); // logging middleware
@@ -40,3 +44,4 @@ app.use("/api/auth", authentication);
 app.use("/api", course);
 app.use("/api", managecourse);
 app.use("/api", upload);
+app.use("/api", mylearning);
