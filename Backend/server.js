@@ -6,7 +6,8 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-app.use(cors);
+app.use(morgan("dev"));
+app.use(cors());
 
 // Establish connection to mango db instance
 const connectToDB = async () => {

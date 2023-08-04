@@ -29,7 +29,7 @@ const sendResponse = (res, status, message) => {
 // if they contains invalid characters then handle the response itself
 const courseFieldsValidator = (req, res, next) => {
   // let responseSent = false;
-  const { title, description, price } = req.body;
+  const { title, description, imageurl } = req.body;
 
   // only check if the specified fiels are there
   if (title && !isAlphaNum(title)) {
@@ -52,10 +52,10 @@ const courseFieldsValidator = (req, res, next) => {
     );
   }
 
-  if (price && !validator.isFloat(price)) {
+  if (image && !validator.isAlphaNum(imageurl)) {
     // validate the price of course
     // responseSent = true;
-    return sendResponse(res, 400, "Provide valid value course price");
+    return sendResponse(res, 400, "Provide valid value for imageurl");
   }
 
   // returns if response was handeled by this function or not

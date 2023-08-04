@@ -52,7 +52,7 @@ const signupValidator = async (res, username, email, password) => {
     // fetch document with specific username from users collection
     const existingUsername = await userModel.findOne({ username: username });
     if (existingUsername) {
-      return sendResponse(403, "Username alreausernamedy taken");
+      return sendResponse(403, "Username already taken");
     }
 
     // fetch document with specific email from users collection
@@ -101,7 +101,7 @@ router.post("/signup", async (req, res) => {
           id: result["_id"],
         },
         JWT_SECRET,
-        { algorithm: "HS256" }
+        { expiresIn: "1hr" }
       );
 
       // send token in response with a success message
@@ -118,8 +118,10 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   // destructure request body and to get email and password
   const { email, password } = req.body;
+  // console.log(email, password);
 
   // validate if email format is correct
+  // console.log(validator.isEmail(email));
   if (!validator.isEmail(email)) {
     return res
       .status(400)
@@ -144,7 +146,7 @@ router.post("/login", async (req, res) => {
             id: userFound["_id"],
           },
           JWT_SECRET,
-          { algorithm: "HS256" }
+          { expiresIn: "1hr" }
         );
 
         return res.json({ message: "Logged in successfully", token: token });
@@ -189,6 +191,17 @@ router.post("/instructor/apply", verifyJWT, async (req, res) => {
       message: "Server Error occured while performing the operation",
     });
   }
+});
+
+router.get("/session", verifyJWT, async (req, res) => {
+  console.log(req.user);
+  let user = {
+    username: req.user.username,
+    email: req.user.email,
+    isInstructor: req.user.isInstructor,
+  };
+
+  res.json(user);
 });
 
 // export the router instance
