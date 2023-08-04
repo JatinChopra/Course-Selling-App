@@ -2,8 +2,12 @@ import { useState } from "react";
 
 import axios from "axios";
 import useLocalStorageState from "use-local-storage-state";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@chakra-ui/react";
 
-import { createRenderToast, useToast } from "@chakra-ui/react";
+// import contexts
+import { useContext } from "react";
+import UserContext from "./contexts/UserContext";
 
 import {
   Modal,
@@ -12,6 +16,7 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
+  Flex,
   ModalCloseButton,
 } from "@chakra-ui/react";
 
@@ -23,55 +28,68 @@ import {
   FormHelperText,
   Center,
   Button,
+  Box,
+  Textarea,
+  Heading,
 } from "@chakra-ui/react";
 
-const ApplyInstructor = ({ isOpen, onOpen, onClose, isLogin }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const toast = useToast();
+const ApplyInstructor = ({ isOpen, onOpen, onClose }) => {
+  const [bio, setBio] = useState("");
+  const [skills, setSkills] = useState("");
   const [token, setToken] = useLocalStorageState("token");
+  const toast = useToast();
+  const navigate = useNavigate();
+  const { userData, setUserData } = useContext(UserContext);
 
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay backdropFilter="blur(2px)" />
         <ModalContent>
-          <Center>
-            <ModalHeader width="100%">
-              {isLogin ? "Login" : "Signup"}
-            </ModalHeader>
-          </Center>
+          <Flex
+            h="45"
+            alignItems={"center"}
+            // background="green"
+            justifyContent={"center"}
+          >
+            <Box mt="5" fontSize={"xl"} fontWeight={"semibold"}>
+              Become Instructor
+            </Box>
+          </Flex>
           <ModalCloseButton />
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              //   console.log(username, email, password);
+              let sarray = skills.split(",");
+              sarray = sarray.map((item) => {
+                return item.replaceAll(" ", "");
+              });
+
               let reqObj = {
-                username: username,
-                email: email,
-                password: password,
+                bio: bio,
+                skills: sarray,
               };
 
-              let url = isLogin
-                ? "http://localhost:5000/api/auth/login"
-                : "http://localhost:5000/api/auth/signup";
+              let url = "http://localhost:5000/api/auth/instructor/apply";
 
+              onClose;
               axios
-                .post(url, reqObj)
+                .post(url, reqObj, {
+                  headers: { Authorization: "Bearer " + token },
+                })
                 .then((res) => {
                   toast({
-                    title: isLogin ? "Logged In" : "Account Created",
+                    title: "Instructor Application",
                     description: res.data.message,
                     status: "success",
                     duration: 4000,
                     isClosable: true,
                   });
-
-                  // set the token in local storage
-                  setToken(res.data.token);
-
-                  // close the modal
+                  setUserData((data) => {
+                    return { ...data, isInstructor: true };
+                  });
+                  setBio("");
+                  setSkills("");
                   onClose();
                 })
                 .catch((er) => {
@@ -86,47 +104,32 @@ const ApplyInstructor = ({ isOpen, onOpen, onClose, isLogin }) => {
                   }
                   console.log(er.message);
                 });
-
-              setUsername("");
-              setEmail("");
-              setPassword("");
             }}
           >
             <ModalBody>
               <FormControl>
-                {isLogin || (
-                  <>
-                    <FormLabel>Username</FormLabel>
-                    <Input
-                      type="text"
-                      isRequired
-                      value={username}
-                      onChange={(e) => {
-                        setUsername(e.target.value);
-                      }}
-                    />
-                  </>
-                )}
-
-                <FormLabel mt="5">Email address</FormLabel>
-                <Input
-                  type="email"
+                <FormLabel mt="5">Bio</FormLabel>
+                <Textarea
+                  type="text"
                   isRequired
-                  value={email}
+                  value={bio}
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setBio(e.target.value);
                   }}
                 />
 
-                <FormLabel mt="5">Password</FormLabel>
+                <FormLabel mt="5">Skills</FormLabel>
                 <Input
-                  type="password"
+                  type="text"
                   isRequired
-                  value={password}
+                  value={skills}
                   onChange={(e) => {
-                    setPassword(e.target.value);
+                    setSkills(e.target.value);
                   }}
                 />
+                <FormHelperText>
+                  Type comma ( , ) separated value.
+                </FormHelperText>
               </FormControl>
             </ModalBody>
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import useLocalStorageState from "use-local-storage-state";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,11 +15,14 @@ import {
 } from "@chakra-ui/react";
 
 import { IoPersonCircle } from "react-icons/io5";
+import UserContext from "./contexts/UserContext";
+import { useContext } from "react";
 
 const ProfileIcon = ({ data }) => {
   const navigate = useNavigate();
   const { username, email, isInstructor } = data;
   const [token, setToken] = useLocalStorageState("token");
+  const { userData, setUserData } = useContext(UserContext);
 
   return (
     <>
@@ -55,6 +58,9 @@ const ProfileIcon = ({ data }) => {
                 setToken("");
                 localStorage.removeItem("token");
                 navigate("/");
+                setUserData((data) => {
+                  return {};
+                });
               }}
             >
               Logout
