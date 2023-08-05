@@ -6,6 +6,7 @@ const upload = multer({});
 
 var serviceAccount = require("../../serviceAccountKey.json");
 const { getStorage } = require("firebase-admin/storage");
+const verifyJWT = require("../middlewares/verifyJWT");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -13,15 +14,14 @@ admin.initializeApp({
 
 const bucket = getStorage().bucket(process.env.BUCKET_URL);
 
-router.post("/upload", upload.single("file"), (req, res) => {
-  console.log(req.file);
+router.post("/upload", verifyJWT, upload.single("file"), (req, res) => {
+  // console.log(req.file);
 
   const fileSize = Math.ceil(req.file.size / 1000000);
-  console.log(fileSize);
+  // console.log(fileSize);
 
   const fileObj = bucket.file(req.file.originalname);
   const stream = fileObj.createWriteStream();
-
   stream.end(req.file.buffer);
 
   stream.on("error", (err) => {

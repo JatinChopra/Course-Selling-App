@@ -5,6 +5,7 @@ import Root from "./routes/Root";
 import Courses from "./routes/Courses";
 import ManageCourses from "./routes/ManageCourses";
 import MyLearning from "./routes/MyLearning";
+// import CreateCourse from "./routes/CreateCourse";
 
 const router = createBrowserRouter([
   {
@@ -17,7 +18,12 @@ const router = createBrowserRouter([
       },
       {
         path: "manage",
-        element: <ManageCourses />,
+        children: [
+          {
+            path: "",
+            element: <ManageCourses />,
+          },
+        ],
       },
       {
         path: "mylearning",

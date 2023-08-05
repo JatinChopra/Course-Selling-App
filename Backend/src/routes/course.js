@@ -52,7 +52,7 @@ const courseFieldsValidator = (req, res, next) => {
     );
   }
 
-  if (image && !validator.isAlphaNum(imageurl)) {
+  if (!imageurl) {
     // validate the price of course
     // responseSent = true;
     return sendResponse(res, 400, "Provide valid value for imageurl");
@@ -92,10 +92,10 @@ router.post("/courses", courseFieldsValidator, verifyJWT, async (req, res) => {
     // verify if the current user is an instructor or not
 
     // destructure the request body
-    const { title, description, price } = req.body;
+    const { title, description, imageurl } = req.body;
 
     // make sure the fields are not emtpy since all of them are required
-    if (!title || !description || !price) {
+    if (!title || !description || !imageurl) {
       return res
         .status(400)
         .json({ message: "Please fill the required fields." });

@@ -5,15 +5,28 @@ import { Box, Center } from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
 
 import { Link } from "react-router-dom";
+import { useDisclosure } from "@chakra-ui/react";
 
 import useLocalStorageState from "use-local-storage-state";
 
 import axios from "axios";
 
 import UserContext from "../components/contexts/UserContext";
+
+import SessionExpiredModal from "../components/SessionExpiredModal";
+
+import { useNavigate } from "react-router-dom";
+
 const Root = () => {
   const [token, setToken] = useLocalStorageState("token");
   const [userData, setUserData] = useState("");
+  const navigate = useNavigate();
+
+  const {
+    isOpen: sessExpIsOpen,
+    onOpen: sessExpOnOpen,
+    onClose: sessExpOnClose,
+  } = useDisclosure();
 
   useEffect(() => {
     if (token) {
@@ -31,6 +44,8 @@ const Root = () => {
             // show modal
             sessExpOnOpen();
             setToken("");
+            setUserData({});
+            navigate("/");
             localStorage.removeItem("token");
           }
           console.log(err.message);
@@ -44,12 +59,18 @@ const Root = () => {
     <>
       <UserContext.Provider value={{ userData, setUserData }}>
         <NavigationBar />
-        <Box h="95vh" mt="5vh" pt="5">
-          <Center height="100%">
+        <Box h="95vh" mt="5vh" pt="5" overflowY={"scroll"}>
+          <Center>
             <Outlet />
           </Center>
         </Box>
       </UserContext.Provider>
+
+      <SessionExpiredModal
+        isOpen={sessExpIsOpen}
+        onOpen={sessExpOnOpen}
+        onClose={sessExpOnClose}
+      />
     </>
   );
 };

@@ -20,7 +20,6 @@ import {
 import { useDisclosure } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import AuthForm from "./AuthForm";
-import SessionExpiredModal from "./SessionExpiredModal";
 import ProfileIcon from "./ProfileIcon";
 import NavLinkButton from "./NavLinkButton";
 import ApplyInstructor from "./ApplyInstructor";
@@ -39,12 +38,6 @@ const NavigationBar = () => {
     isOpen: signupIsOpen,
     onOpen: signupOnOpen,
     onClose: signupOnClose,
-  } = useDisclosure();
-
-  const {
-    isOpen: sessExpIsOpen,
-    onOpen: sessExpOnOpen,
-    onClose: sessExpOnClose,
   } = useDisclosure();
 
   const {
@@ -156,12 +149,6 @@ const NavigationBar = () => {
         isOpen={instructorAppIsOpen}
         onOpen={instructorAppOnOpen}
         onClose={instructorAppOnClose}
-      />
-
-      <SessionExpiredModal
-        isOpen={sessExpIsOpen}
-        onOpen={sessExpOnOpen}
-        onClose={sessExpOnClose}
       />
     </>
   );
