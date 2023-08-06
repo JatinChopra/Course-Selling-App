@@ -6,6 +6,7 @@ import Courses from "./routes/Courses";
 import ManageCourses from "./routes/ManageCourses";
 import MyLearning from "./routes/MyLearning";
 import CourseDetail from "./routes/CourseDetail";
+import ViewCourse from "./routes/ViewCourse";
 // import CreateCourse from "./routes/CreateCourse";
 
 const router = createBrowserRouter([
@@ -32,7 +33,16 @@ const router = createBrowserRouter([
       },
       {
         path: "mylearning",
-        element: <MyLearning />,
+        children: [
+          {
+            path: "",
+            element: <MyLearning />,
+          },
+          {
+            path: ":courseid",
+            element: <ViewCourse />,
+          },
+        ],
       },
     ],
   },

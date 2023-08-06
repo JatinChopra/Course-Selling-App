@@ -99,16 +99,23 @@ const ManageCourses = () => {
           // flexDirection="row-reverse"
         >
           {loading
-            ? skeletonData.map(() => {
+            ? skeletonData.map((index) => {
                 return (
                   <Skeleton>
-                    <Box width="250px" height="200px" />
+                    <Box key={index} width="250px" height="200px" />
                   </Skeleton>
                 );
               })
-            : courses.map((course) => {
+            : courses.map((course, index) => {
                 // console.log(course);
-                return <CourseCard key={course._id} course={course} />;
+                return (
+                  <CourseCard
+                    key={index}
+                    course={course}
+                    buttonText={"Manage"}
+                    link={`${course._id.toString()}`}
+                  />
+                );
               })}
         </Flex>
       </VStack>

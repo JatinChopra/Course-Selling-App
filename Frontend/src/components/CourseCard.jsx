@@ -1,64 +1,97 @@
 import React from "react";
 
-import { Box, VStack } from "@chakra-ui/react";
+import { Box, VStack, tokenToCSSVar } from "@chakra-ui/react";
 import { Button, Text } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import {
   Skeleton,
   SkeletonCircle,
   SkeletonText,
   Image,
+  Spacer,
+  Flex,
 } from "@chakra-ui/react";
-const CourseCard = ({ course }) => {
-  // console.log(course);
+import axios from "axios";
+import { useToast } from "@chakra-ui/react";
+import useLocalStorageState from "use-local-storage-state";
+const CourseCard = ({ course, buttonText, link }) => {
   const { _id, title, description, imageurl } = course;
   const navigate = useNavigate();
+  const toast = useToast();
+  const [token, setToken] = useLocalStorageState("token");
+
+  const makeToast = (title, description, status) => {
+    toast({
+      title: title,
+      description: description,
+      status: status,
+      duration: 3500,
+      isClosable: true,
+    });
+  };
 
   const manageButtonHandler = () => {
-    // console.log(course._id);
-    // console.log(course._id.toString());
-    navigate(course._id.toString());
+    if (link == "http://localhost:5000/api/enroll") {
+      axios
+        .post(
+          link,
+          {
+            courseId: _id.toString(),
+          },
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        )
+        .then((res) => {
+          makeToast("Enroll Operation", res.data.message, "success");
+        })
+        .catch((err) => {
+          if (err.response) {
+            makeToast("Error", err.response.data.message, "error");
+          }
+          console.log(err.message);
+        });
+    } else {
+      navigate(link);
+    } // addition
+    // navigate(course._id.toString());
   };
 
   return (
-    // <Skeleton isLoaded={false}>
     <Box
       width="250px"
       backgroundColor={"gray.700"}
-      // borderRadius={"15px"}
       border="1px solid"
       color="gray.200"
-      // background={"green"}
       minH={"200px"}
     >
-      <VStack>
-        <Image
-          src={imageurl}
-          width="100%"
-          height="112px"
-          objectFit="cover"
-          // borderTopRadius={"15"}
-        />
-        <Box width="100%" px="2" pb="3" pt="2">
-          <Text fontSize={"lg"} fontWeight={"semibold"}>
-            {course.title}
-          </Text>
-          <Text fontSize={"sm"} width={"95%"}>
-            {course.description}
-          </Text>
-          <Button
-            mt="2"
-            float="right"
-            colorScheme="teal"
-            size="sm"
-            onClick={manageButtonHandler}
-          >
-            Manage
-          </Button>
+      <VStack height="100%">
+        <Image src={imageurl} width="100%" height="112px" objectFit="cover" />
+        <Box width="100%" px="2" pb="3" pt="2" height="100%">
+          <Flex direction={"column"} height="100%">
+            <Text fontSize={"lg"} fontWeight={"semibold"}>
+              {title}
+            </Text>
+            <Text fontSize={"sm"} width={"95%"}>
+              {description}
+            </Text>
+
+            <Spacer />
+            <Button
+              mt="2"
+              float="right"
+              colorScheme="teal"
+              size="sm"
+              onClick={manageButtonHandler}
+            >
+              {buttonText}
+            </Button>
+          </Flex>
         </Box>
       </VStack>
     </Box>
-    // {/* </Skeleton> */}
   );
 };
 
