@@ -15,10 +15,10 @@ admin.initializeApp({
 const bucket = getStorage().bucket(process.env.BUCKET_URL);
 
 router.post("/upload", verifyJWT, upload.single("file"), (req, res) => {
-  // console.log(req.file);
+  console.log(req.file);
 
   const fileSize = Math.ceil(req.file.size / 1000000);
-  // console.log(fileSize);
+  console.log(fileSize);
 
   const fileObj = bucket.file(req.file.originalname);
   const stream = fileObj.createWriteStream();

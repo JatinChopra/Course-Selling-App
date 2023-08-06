@@ -5,6 +5,7 @@ import Root from "./routes/Root";
 import Courses from "./routes/Courses";
 import ManageCourses from "./routes/ManageCourses";
 import MyLearning from "./routes/MyLearning";
+import CourseDetail from "./routes/CourseDetail";
 // import CreateCourse from "./routes/CreateCourse";
 
 const router = createBrowserRouter([
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
           {
             path: "",
             element: <ManageCourses />,
+          },
+          {
+            path: ":courseid",
+            element: <CourseDetail />,
           },
         ],
       },

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import { Box, Button, Flex, Center, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Center, VStack, useToast } from "@chakra-ui/react";
 
 import { Link } from "react-router-dom";
 
@@ -11,6 +11,7 @@ import useLocalStorageState from "use-local-storage-state";
 import { useNavigate } from "react-router-dom";
 import { useDisclosure } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/react";
+import axios from "axios";
 
 import {
   Drawer,
@@ -23,11 +24,17 @@ import {
 } from "@chakra-ui/react";
 
 import CreateCourse from "../components/CreateCourse";
+import CourseCard from "../components/CourseCard";
+import { Skeleton } from "@chakra-ui/react";
 
 const ManageCourses = () => {
   const [token, setToken] = useLocalStorageState("token");
   const { userData, setUserData } = useContext(UserContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [loading, setisLoading] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const skeletonData = new Array(9).fill("");
+  const toast = useToast();
 
   if (!token && !userData) {
     return (
@@ -36,38 +43,44 @@ const ManageCourses = () => {
       </>
     );
   }
+  const makeToast = (title, description, status) => {
+    toast({
+      title: title,
+      description: description,
+      status: status,
+      duration: 3500,
+      isClosable: true,
+    });
+  };
+
+  const fetchCourses = () => {
+    setisLoading(true);
+    axios
+      .get("http://localhost:5000/api/courses/manage", {
+        headers: { Authorization: "Bearer " + token },
+      })
+      .then((res) => {
+        // console.log(res.data.courses);
+        setCourses(res.data.courses);
+        setisLoading(false);
+      })
+      .catch((err) => {
+        if (err.response) {
+          console.log(err.response.data.message);
+          makeToast("Error", err.response.data.message, "error");
+        }
+        console.log(err.message);
+        makeToast("Error", err.message, "error");
+      })
+      .finally(() => {});
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
 
   return (
     <>
-      {/* <Flex
-        width={{
-          base: "100%",
-          md: "100%",
-          lg: "8xl",
-        }}
-        py="10"
-        h="100%"
-        // background="green"
-      > */}
-      {/* <Box height="100%" minW="30%" px="4">
-          <Center>
-            <Box>
-              <Text
-                px="5"
-                fontSize="xl"
-                fontWeight={"semibold"}
-                my="3"
-                color="blackAlpha.700"
-              >
-                Create Course
-              </Text>
-              <Text px="5" fontSize="md" my="3">
-                Upload an Image
-              </Text>
-              <Create />
-            </Box>
-          </Center>
-        </Box> */}
       <VStack px="4" py="10" width={"84%"}>
         <Box width="84%">
           <Button float="right" onClick={onOpen}>
@@ -75,41 +88,45 @@ const ManageCourses = () => {
           </Button>
         </Box>
         <Flex
-          justifyContent={"center"}
+          justifyContent="start"
+          // alignItems={"center"}
           // background={"pink"}
+          width="100%"
           mt="8"
           flexWrap={"wrap"}
           gap={"5"}
+
           // flexDirection="row-reverse"
-        ></Flex>
+        >
+          {loading
+            ? skeletonData.map(() => {
+                return (
+                  <Skeleton>
+                    <Box width="250px" height="200px" />
+                  </Skeleton>
+                );
+              })
+            : courses.map((course) => {
+                // console.log(course);
+                return <CourseCard key={course._id} course={course} />;
+              })}
+        </Flex>
       </VStack>
       {/* </Flex> */}
 
-      <Drawer
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        size="sm"
-        background="green"
-      >
+      <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="sm">
         <DrawerOverlay />
-        <DrawerContent>
+        <DrawerContent color="white" backgroundColor="gray.700">
           <DrawerCloseButton />
           <DrawerHeader>Create New Course</DrawerHeader>
 
           <DrawerBody>
             <Center>
               <Box>
-                <Text
-                  px="5"
-                  fontWeight={"semibold"}
-                  fontSize="lg"
-                  my="3"
-                  color="gray.700"
-                >
+                <Text px="5" fontWeight={"semibold"} fontSize="lg" my="3">
                   Upload Image (Course Thumbnail)
                 </Text>
-                <CreateCourse />
+                <CreateCourse fetchCourses={fetchCourses} />
               </Box>
             </Center>
           </DrawerBody>

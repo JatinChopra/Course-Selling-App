@@ -13,7 +13,7 @@ const chapterModel = require("../models/chapterModel");
 
 /**
 GET /api/courses/manage : get all the courses created by instructor
-GET /api/courses/:courseid/chapters : get all the chapters in the particular course
+GET /api/courses/:courseid/chapters : get all the chapters in the particular course along with the course details
 POST api/courses/:courseid/newchapter : create a new chapter and save to mongodb ( title, desc,videourl) also add the new chapter id to course.chapters array
 DELETE api/courses/:courseid/:chapterid : remove chapter from db and from course.chapters array
 PUT api/course/:courseid/:chapterid : update the chapter with the given id
@@ -57,7 +57,7 @@ router.get("/courses/:courseid/chapters", verifyJWT, async (req, res) => {
       return res.json({ message: "you are not owner of this course." });
     }
 
-    return res.json({ chapters: courseObj.chapters });
+    return res.json({ courseObj });
   } catch (err) {
     return res.status(500).json({
       message: "Error while fetching chapter details, " + err.message,
@@ -79,8 +79,8 @@ router.post("/courses/:courseid/newchapter", verifyJWT, async (req, res) => {
   }
 
   try {
-    const { title, description, video } = req.body;
-    if (!title || !description || !video) {
+    const { title, description, videourl } = req.body;
+    if (!title || !description || !videourl) {
       return res.status(403).json({
         message:
           "Please provide with the requried fields [ title, description & video ] ",
@@ -90,7 +90,7 @@ router.post("/courses/:courseid/newchapter", verifyJWT, async (req, res) => {
     const newChapter = new chapterModel({
       title: title,
       description: description,
-      video: video,
+      videourl: videourl,
     });
 
     const chapterData = await newChapter.save();
@@ -103,9 +103,9 @@ router.post("/courses/:courseid/newchapter", verifyJWT, async (req, res) => {
       chapterid: chapterData._id,
     });
   } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Error occured while creating a new chapter." });
+    return res.status(500).json({
+      message: "Error occured while creating a new chapter." + err.message,
+    });
   }
 });
 

@@ -21,17 +21,16 @@ import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import useLocalStorageState from "use-local-storage-state";
 
-const Create = ({ fetchCourses }) => {
+const Create = ({ courseid, fetchChapters }) => {
   const [file, setFile] = useState("");
   const [uploading, setUploading] = useState(false);
   const [token, setToken] = useLocalStorageState("token");
   const fileInputRef = useRef(null);
-  const [creatingCourse, setCreatingCourse] = useState(false);
   const toast = useToast();
-  const [course, setCourse] = useState({
+  const [chapter, setChapter] = useState({
     title: "",
     description: "",
-    imageurl: "",
+    videourl: "",
   });
 
   const makeToast = (title, description, status) => {
@@ -59,7 +58,7 @@ const Create = ({ fetchCourses }) => {
         formData,
         { headers: { Authorization: "Bearer " + token } }
       );
-      setCourse({ ...course, imageurl: res.data.url });
+      setChapter({ ...chapter, videourl: res.data.url });
       makeToast("Upload Operation", res.data.message, "success");
       setUploading(false);
     } catch (err) {
@@ -74,21 +73,23 @@ const Create = ({ fetchCourses }) => {
 
   const formHandler = (e) => {
     e.preventDefault();
-    setCreatingCourse(true);
     axios
-      .post("http://localhost:5000/api/courses", course, {
-        headers: { Authorization: "Bearer " + token },
-      })
+      .post(
+        `http://localhost:5000/api/courses/${courseid}/newchapter`,
+        chapter,
+        {
+          headers: { Authorization: "Bearer " + token },
+        }
+      )
       .then((res) => {
-        setCourse({ title: "", imageurl: "", description: "" });
+        setChapter({ title: "", imageurl: "", description: "" });
         setFile("");
-        makeToast("Course Created", res.data.message, "success");
-        setCreatingCourse(false);
-        fetchCourses();
+        makeToast("Chapter Created", res.data.message, "success");
+        fetchChapters();
       })
       .catch((err) => {
         if (err.response) {
-          makeToast("Create Course", err.response.data.message, "error");
+          makeToast("Create Chapter", err.response.data.message, "error");
         }
         console.log(err.message);
       });
@@ -150,8 +151,10 @@ const Create = ({ fetchCourses }) => {
                     {file.name} <br /> Uploading a large file might take 2-3
                     minutes.
                   </Text>
-                ) : (
+                ) : !uploading ? (
                   <Text fontWeight="semibold"> Drag and Drop a File</Text>
+                ) : (
+                  <>s</>
                 )}
               </Center>
             </VStack>
@@ -177,19 +180,19 @@ const Create = ({ fetchCourses }) => {
             <Input
               colorScheme="teal"
               type="text"
-              placeholder="Course Title"
-              value={course.title}
+              placeholder="Chapter Title"
+              value={chapter.title}
               onChange={(e) => {
-                setCourse({ ...course, title: e.target.value });
+                setChapter({ ...chapter, title: e.target.value });
               }}
             />
             <Textarea
               colorScheme="teal"
-              placeholder="Course Description"
+              placeholder="Chapter Description"
               mt="5"
-              value={course.description}
+              value={chapter.description}
               onChange={(e) => {
-                setCourse({ ...course, description: e.target.value });
+                setChapter({ ...chapter, description: e.target.value });
               }}
             />
           </FormControl>
@@ -199,7 +202,6 @@ const Create = ({ fetchCourses }) => {
             float="right"
             mt="5"
             type="submit"
-            isLoading={creatingCourse}
           >
             Create
           </Button>
