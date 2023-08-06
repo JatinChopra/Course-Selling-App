@@ -121,11 +121,25 @@ const CourseDetail = () => {
             New Chapter
           </Button>
         </Box>
-        <VStack mt="5" width="100%" height="80vh" overflowY={"scroll"}>
+        <VStack
+          backgroundColor={"whiteAlpha.800"}
+          mt="5"
+          width="100%"
+          height="80vh"
+          overflowY={"scroll"}
+        >
           {!isLoading && course ? (
             <>
-              {course.chapters.map((item) => {
-                return <ChapterCard chapterObj={item} />;
+              {course.chapters.map((item, index) => {
+                return (
+                  <ChapterCard
+                    key={item._id}
+                    fetchChapters={fetchChapters}
+                    courseid={courseid}
+                    chapterObj={item}
+                    index={index}
+                  />
+                );
               })}
             </>
           ) : (
