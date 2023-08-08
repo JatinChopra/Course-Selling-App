@@ -46,7 +46,6 @@ const Courses = () => {
 
   return (
     <>
-      <Box mt="10"> Hellos {import.meta.VITE_API_URL}</Box>
       <Box px="4" py="10" width={"84%"}>
         <Flex
           justifyContent="start"
@@ -64,7 +63,7 @@ const Courses = () => {
                   key={item._id.toString()}
                   course={item}
                   buttonText={"Enroll"}
-                  link={"http://localhost:5000/api/enroll"}
+                  link={`${BASE_URL}/api/enroll`}
                 />
               );
             })

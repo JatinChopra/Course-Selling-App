@@ -35,6 +35,7 @@ const CourseCard = ({ course, buttonText, link }) => {
 
   const manageButtonHandler = () => {
     if (link == `${BASE_URL}/api/enroll`) {
+      console.log("equal link");
       axios
         .post(
           link,
@@ -57,6 +58,7 @@ const CourseCard = ({ course, buttonText, link }) => {
           console.log(err.message);
         });
     } else {
+      console.log("not equal link");
       navigate(link);
     } // addition
     // navigate(course._id.toString());

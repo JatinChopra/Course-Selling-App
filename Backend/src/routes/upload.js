@@ -9,7 +9,7 @@ const { getStorage } = require("firebase-admin/storage");
 const verifyJWT = require("../middlewares/verifyJWT");
 
 const serviceAccount = {
-  type: "service_account",
+  type: process.env.type,
   project_id: process.env.project_id,
   private_key_id: process.env.private_key_id,
   private_key: process.env.private_key,
