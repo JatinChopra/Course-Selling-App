@@ -21,6 +21,8 @@ import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import useLocalStorageState from "use-local-storage-state";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const Create = ({ fetchCourses }) => {
   const [file, setFile] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -54,11 +56,9 @@ const Create = ({ fetchCourses }) => {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/upload",
-        formData,
-        { headers: { Authorization: "Bearer " + token } }
-      );
+      const res = await axios.post(`${BASE_URL}/api/upload`, formData, {
+        headers: { Authorization: "Bearer " + token },
+      });
       setCourse({ ...course, imageurl: res.data.url });
       makeToast("Upload Operation", res.data.message, "success");
       setUploading(false);
@@ -76,7 +76,7 @@ const Create = ({ fetchCourses }) => {
     e.preventDefault();
     setCreatingCourse(true);
     axios
-      .post("http://localhost:5000/api/courses", course, {
+      .post(`${BASE_URL}/api/courses`, course, {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {

@@ -5,6 +5,9 @@ import CourseCard from "../components/CourseCard";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import useLocalStorageState from "use-local-storage-state";
+
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const MyLearning = () => {
   const [courses, setCourses] = useState([]);
   const [isloading, setIsloading] = useState(false);
@@ -23,7 +26,7 @@ const MyLearning = () => {
     setIsloading(true);
 
     axios
-      .get("http://localhost:5000/api/users/learning/courses", {
+      .get(`${BASE_URL}/api/users/learning/courses`, {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {

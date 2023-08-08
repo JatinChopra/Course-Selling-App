@@ -17,6 +17,8 @@ import SessionExpiredModal from "../components/SessionExpiredModal";
 
 import { useNavigate } from "react-router-dom";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const Root = () => {
   const [token, setToken] = useLocalStorageState("token");
   const [userData, setUserData] = useState("");
@@ -31,7 +33,7 @@ const Root = () => {
   useEffect(() => {
     if (token) {
       axios
-        .get("http://localhost:5000/api/auth/session", {
+        .get(`${BASE_URL}/api/auth/session`, {
           headers: {
             Authorization: "Bearer " + token,
           },

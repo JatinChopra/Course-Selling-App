@@ -16,6 +16,8 @@ import { DeleteIcon } from "@chakra-ui/icons";
 
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const ChapterCard = ({ fetchChapters, courseid, chapterObj, index }) => {
   const { _id, title, description, videourl } = chapterObj;
   const [token, setToken] = useLocalStorageState("token");
@@ -33,10 +35,9 @@ const ChapterCard = ({ fetchChapters, courseid, chapterObj, index }) => {
 
   const onDelete = () => {
     axios
-      .delete(
-        `http://localhost:5000/api/courses/${courseid}/${_id.toString()}`,
-        { headers: { Authorization: "Bearer " + token } }
-      )
+      .delete(`${BASE_URL}/api/courses/${courseid}/${_id.toString()}`, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => {
         makeToast("Delete", res.data.message, "success");
         fetchChapters();

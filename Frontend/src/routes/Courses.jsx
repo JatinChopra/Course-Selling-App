@@ -5,6 +5,9 @@ import CourseCard from "../components/CourseCard";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 
+// require("dotenv").config();
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [isloading, setIsloading] = useState(false);
@@ -21,9 +24,10 @@ const Courses = () => {
   };
   const fetchCourses = () => {
     setIsloading(true);
+    // console.log(import.meta.env.VITE_API_URL);
 
     axios
-      .get("http://localhost:5000/api/courses")
+      .get(`${BASE_URL}/api/courses`)
       .then((res) => {
         setCourses(res.data.courses);
         setIsloading(false);
@@ -42,6 +46,7 @@ const Courses = () => {
 
   return (
     <>
+      <Box mt="10"> Hellos {import.meta.VITE_API_URL}</Box>
       <Box px="4" py="10" width={"84%"}>
         <Flex
           justifyContent="start"

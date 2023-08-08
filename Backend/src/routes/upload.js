@@ -39,7 +39,9 @@ router.post("/upload", verifyJWT, upload.single("file"), (req, res) => {
   stream.end(req.file.buffer);
 
   stream.on("error", (err) => {
-    return res.status(500).json({ message: "Error while uploading file." });
+    return res
+      .status(500)
+      .json({ message: "Error while uploading file." + err.message });
   });
 
   stream.on("finish", async () => {

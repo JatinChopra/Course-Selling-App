@@ -33,6 +33,8 @@ import {
   Heading,
 } from "@chakra-ui/react";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const ApplyInstructor = ({ isOpen, onOpen, onClose }) => {
   const [bio, setBio] = useState("");
   const [skills, setSkills] = useState("");
@@ -70,7 +72,7 @@ const ApplyInstructor = ({ isOpen, onOpen, onClose }) => {
                 skills: sarray,
               };
 
-              let url = "http://localhost:5000/api/auth/instructor/apply";
+              let url = `${BASE_URL}/api/auth/instructor/apply`;
 
               onClose;
               axios

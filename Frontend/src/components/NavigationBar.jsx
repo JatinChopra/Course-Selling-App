@@ -1,6 +1,5 @@
 import useLocalStorageState from "use-local-storage-state";
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 import UserContext from "./contexts/UserContext";
 import { useContext } from "react";

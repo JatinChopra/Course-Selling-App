@@ -7,6 +7,9 @@ import axios from "axios";
 import Plyr from "plyr-react";
 import "plyr-react/plyr.css";
 import useLocalStorageState from "use-local-storage-state";
+
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const ViewCourse = () => {
   const { courseid } = useParams();
   const [courseDetails, setCourseDetail] = useState(null);
@@ -28,7 +31,7 @@ const ViewCourse = () => {
     setIsloading(true);
 
     axios
-      .get(`http://localhost:5000/api/users/learning/${courseid}`, {
+      .get(`${BASE_URL}/api/users/learning/${courseid}`, {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {

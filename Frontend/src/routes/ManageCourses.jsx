@@ -27,6 +27,8 @@ import CreateCourse from "../components/CreateCourse";
 import CourseCard from "../components/CourseCard";
 import { Skeleton } from "@chakra-ui/react";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const ManageCourses = () => {
   const [token, setToken] = useLocalStorageState("token");
   const { userData, setUserData } = useContext(UserContext);
@@ -56,7 +58,7 @@ const ManageCourses = () => {
   const fetchCourses = () => {
     setisLoading(true);
     axios
-      .get("http://localhost:5000/api/courses/manage", {
+      .get(`${BASE_URL}/api/courses/manage`, {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {

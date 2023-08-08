@@ -25,6 +25,8 @@ import {
   Button,
 } from "@chakra-ui/react";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const AuthForm = ({ isOpen, onOpen, onClose, isLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,8 +56,8 @@ const AuthForm = ({ isOpen, onOpen, onClose, isLogin }) => {
               };
 
               let url = isLogin
-                ? "http://localhost:5000/api/auth/login"
-                : "http://localhost:5000/api/auth/signup";
+                ? `${BASE_URL}/api/auth/login`
+                : `${BASE_URL}/api/auth/signup`;
 
               axios
                 .post(url, reqObj)

@@ -28,6 +28,8 @@ import { useDisclosure, Center } from "@chakra-ui/react";
 import ChapterCard from "../components/ChapterCard";
 import CreateChapter from "../components/CreateChapter";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const CourseDetail = () => {
   const [token, setToken] = useLocalStorageState("token");
   const { courseid } = useParams();
@@ -38,7 +40,7 @@ const CourseDetail = () => {
   const fetchChapters = () => {
     setIsLoading(true);
     axios
-      .get(`http://localhost:5000/api/courses/${courseid}/chapters`, {
+      .get(`${BASE_URL}/api/courses/${courseid}/chapters`, {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {

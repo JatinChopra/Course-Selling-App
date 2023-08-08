@@ -21,6 +21,8 @@ import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import useLocalStorageState from "use-local-storage-state";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const Create = ({ courseid, fetchChapters }) => {
   const [file, setFile] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -53,11 +55,9 @@ const Create = ({ courseid, fetchChapters }) => {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/upload",
-        formData,
-        { headers: { Authorization: "Bearer " + token } }
-      );
+      const res = await axios.post(`${BASE_URL}/api/upload`, formData, {
+        headers: { Authorization: "Bearer " + token },
+      });
       setChapter({ ...chapter, videourl: res.data.url });
       makeToast("Upload Operation", res.data.message, "success");
       setUploading(false);
@@ -74,13 +74,9 @@ const Create = ({ courseid, fetchChapters }) => {
   const formHandler = (e) => {
     e.preventDefault();
     axios
-      .post(
-        `http://localhost:5000/api/courses/${courseid}/newchapter`,
-        chapter,
-        {
-          headers: { Authorization: "Bearer " + token },
-        }
-      )
+      .post(`${BASE_URL}/api/courses/${courseid}/newchapter`, chapter, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => {
         setChapter({ title: "", imageurl: "", description: "" });
         setFile("");

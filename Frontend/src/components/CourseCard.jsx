@@ -14,6 +14,9 @@ import {
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import useLocalStorageState from "use-local-storage-state";
+
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const CourseCard = ({ course, buttonText, link }) => {
   const { _id, title, description, imageurl } = course;
   const navigate = useNavigate();
@@ -31,7 +34,7 @@ const CourseCard = ({ course, buttonText, link }) => {
   };
 
   const manageButtonHandler = () => {
-    if (link == "http://localhost:5000/api/enroll") {
+    if (link == `${BASE_URL}/api/enroll`) {
       axios
         .post(
           link,
