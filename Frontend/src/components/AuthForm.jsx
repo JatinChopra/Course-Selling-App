@@ -133,7 +133,9 @@ const AuthForm = ({ isOpen, onOpen, onClose, isLogin }) => {
             </ModalBody>
 
             <Center my="7">
-              <Button type="submit">Submit</Button>
+              <Button colorScheme="buttons" type="submit">
+                Submit
+              </Button>
             </Center>
           </form>
         </ModalContent>

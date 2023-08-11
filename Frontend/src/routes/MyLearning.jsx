@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, Spinner, AbsoluteCenter } from "@chakra-ui/react";
 import CourseCard from "../components/CourseCard";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
@@ -47,11 +47,9 @@ const MyLearning = () => {
 
   return (
     <>
-      <Box px="4" py="10" width={"84%"}>
+      <Box px="4" p="10" width={"100%"}>
         <Flex
-          justifyContent="start"
-          // alignItems={"center"}
-          // background={"pink"}
+          justifyContent="center"
           width="100%"
           mt="8"
           flexWrap={"wrap"}
@@ -69,7 +67,11 @@ const MyLearning = () => {
               );
             })
           ) : (
-            <>Loading...</>
+            <>
+              <AbsoluteCenter>
+                <Spinner />
+              </AbsoluteCenter>
+            </>
           )}
         </Flex>
       </Box>

@@ -14,6 +14,7 @@ import {
   Flex,
   Center,
   VStack,
+  Progress,
 } from "@chakra-ui/react";
 
 import { useToast } from "@chakra-ui/react";
@@ -26,7 +27,9 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 const Create = ({ fetchCourses }) => {
   const [file, setFile] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [imgurl, setImgurl] = useState("");
   const [token, setToken] = useLocalStorageState("token");
+  const [uploaded, setUploaded] = useState(false);
   const fileInputRef = useRef(null);
   const [creatingCourse, setCreatingCourse] = useState(false);
   const toast = useToast();
@@ -49,19 +52,23 @@ const Create = ({ fetchCourses }) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer.files[0];
     setFile(droppedFile);
+    handleUpload(droppedFile);
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (fileObj) => {
     setUploading(true);
     const formData = new FormData();
+    let file = fileObj;
     formData.append("file", file);
     try {
       const res = await axios.post(`${BASE_URL}/api/upload`, formData, {
         headers: { Authorization: "Bearer " + token },
       });
-      setCourse({ ...course, imageurl: res.data.url });
+      // setCourse({ ...course, imageurl: res.data.url });
+      setImgurl(res.data.url);
       makeToast("Upload Operation", res.data.message, "success");
       setUploading(false);
+      setUploaded(true);
     } catch (err) {
       if (err.response) {
         console.log(err.response.data.message);
@@ -75,8 +82,13 @@ const Create = ({ fetchCourses }) => {
   const formHandler = (e) => {
     e.preventDefault();
     setCreatingCourse(true);
+    setCourse({ ...course, imageurl: imgurl });
+    let newCourse = {
+      ...course,
+      imageurl: imgurl,
+    };
     axios
-      .post(`${BASE_URL}/api/courses`, course, {
+      .post(`${BASE_URL}/api/courses`, newCourse, {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {
@@ -84,6 +96,7 @@ const Create = ({ fetchCourses }) => {
         setFile("");
         makeToast("Course Created", res.data.message, "success");
         setCreatingCourse(false);
+        setUploaded(false);
         fetchCourses();
       })
       .catch((err) => {
@@ -114,53 +127,75 @@ const Create = ({ fetchCourses }) => {
             width="100%"
             position={"relative"}
           >
-            <VStack my="auto">
-              <Input
-                type="file"
-                display="none"
-                onClick={(e) => {
-                  console.log(e.target.value);
-                }}
-                ref={fileInputRef}
-                onChange={(e) => {
-                  setFile(e.target.files[0]);
-                }}
-              />
-              <Button
-                onClick={() => {
-                  fileInputRef.current.click();
-                }}
-                colorScheme="teal"
-                mt="5"
-              >
-                Select File
-              </Button>
+            {uploading ? (
+              <>
+                <Box my="20">
+                  <Text fontWeight="semibold">Uploading : {file.name}</Text>
+                  <Progress
+                    hasStripe
+                    value={64}
+                    isIndeterminate
+                    my="20"
+                    colorScheme="buttons"
+                  />
+                </Box>
+              </>
+            ) : uploaded ? (
+              <>
+                <Text my="20" fontWeight="semibold">
+                  Uploaded : {file.name}
+                </Text>
+              </>
+            ) : (
+              <VStack my="auto">
+                <Input
+                  type="file"
+                  display="none"
+                  onClick={(e) => {
+                    console.log(e.target.value);
+                  }}
+                  ref={fileInputRef}
+                  onChange={(e) => {
+                    setFile(e.target.files[0]);
+                    handleUpload(e.target.files[0]);
+                  }}
+                />
+                <Button
+                  onClick={() => {
+                    fileInputRef.current.click();
+                  }}
+                  colorScheme="buttons"
+                  mt="5"
+                >
+                  Select File
+                </Button>
 
-              <div>OR</div>
+                <div>OR</div>
 
-              <Center
-                // color="white"
-                textAlign={"center"}
-                width="100%"
-                height="100%"
-                mb="5"
-              >
-                {file ? (
-                  <Text>
-                    {file.name} <br /> Uploading a large file might take 2-3
-                    minutes.
-                  </Text>
-                ) : (
-                  <Text fontWeight="semibold"> Drag and Drop a File</Text>
-                )}
-              </Center>
-            </VStack>
+                <Center
+                  // color="white"
+                  textAlign={"center"}
+                  width="100%"
+                  height="100%"
+                  mb="5"
+                >
+                  {file ? (
+                    <Text>
+                      {file.name} <br /> Uploading a large file might take 2-3
+                      minutes.
+                    </Text>
+                  ) : (
+                    <Text fontWeight="semibold"> Drag and Drop a File</Text>
+                  )}
+                </Center>
+              </VStack>
+            )}
           </Box>
-          <Flex>
+          {/* <Flex>
             <Spacer />
             <Button
               mb="7"
-              colorScheme="teal"
+              colorScheme="buttons"
               size="sm"
               mt="3"
               onClick={() => {
@@ -170,7 +205,7 @@ const Create = ({ fetchCourses }) => {
             >
               Upload
             </Button>
-          </Flex>
+          </Flex> */}
         </Box>
         <form onSubmit={formHandler}>
           <FormControl>
@@ -194,12 +229,13 @@ const Create = ({ fetchCourses }) => {
             />
           </FormControl>
           <Button
-            colorScheme="teal"
+            colorScheme="buttons"
             size="sm"
             float="right"
             mt="5"
             type="submit"
             isLoading={creatingCourse}
+            isDisabled={!uploaded}
           >
             Create
           </Button>

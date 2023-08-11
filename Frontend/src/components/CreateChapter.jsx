@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import {
   Box,
@@ -14,6 +14,7 @@ import {
   Flex,
   Center,
   VStack,
+  Progress,
 } from "@chakra-ui/react";
 
 import { useToast } from "@chakra-ui/react";
@@ -26,7 +27,12 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 const Create = ({ courseid, fetchChapters }) => {
   const [file, setFile] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [uploaded, setUploaded] = useState(false);
+  const [videoURL, setVideoURL] = useState("");
   const [token, setToken] = useLocalStorageState("token");
+  const [showProgress, setShowProgress] = useState(false);
+
   const fileInputRef = useRef(null);
   const toast = useToast();
   const [chapter, setChapter] = useState({
@@ -45,22 +51,72 @@ const Create = ({ courseid, fetchChapters }) => {
   };
 
   const handleDrop = (e) => {
+    // console.log()
     e.preventDefault();
     const droppedFile = e.dataTransfer.files[0];
     setFile(droppedFile);
+    console.log(droppedFile);
+    setShowProgress(true);
+    handleUpload(droppedFile);
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (droppedFile) => {
     setUploading(true);
     const formData = new FormData();
+    let file = droppedFile;
     formData.append("file", file);
+
+    let fileSize = Math.ceil(file.size / 1000000);
+    console.log(fileSize); // 50mb
+    let estimatedtimeRemaining = fileSize * 1.4; //70seconds
+    let segmentsize = Math.ceil(100 / estimatedtimeRemaining); // 1.428 (add)
+    let timer = 0;
+
     try {
+      const progressHandler = () => {
+        setProgress((prog) => {
+          return prog + segmentsize;
+        });
+        timer += 1;
+        if (timer >= estimatedtimeRemaining) {
+          clearInterval(progressInterval);
+        }
+      };
+
+      const progressInterval = setInterval(progressHandler, 1000);
+
       const res = await axios.post(`${BASE_URL}/api/upload`, formData, {
         headers: { Authorization: "Bearer " + token },
       });
-      setChapter({ ...chapter, videourl: res.data.url });
+
+      setVideoURL(res.data.url);
+      console.log("uploaded : ", res.data.url);
+
       makeToast("Upload Operation", res.data.message, "success");
-      setUploading(false);
+      clearInterval(progressInterval);
+      console.log(progress);
+      if (progress < 95) {
+        console.log("i'm here in less 96");
+        console.log(res.data.url);
+        setProgress((value) => {
+          return 97;
+        });
+        setTimeout(() => {
+          setProgress(99);
+          setTimeout(() => {
+            setUploaded(true);
+            setUploading(false);
+
+            setProgress(0);
+          }, 800);
+        }, 800);
+      } else {
+        console.log("im here in more 95");
+        setUploaded(true);
+        setUploading(false);
+      }
+
+      // setUploading(false);
     } catch (err) {
       if (err.response) {
         console.log(err.response.data.message);
@@ -68,19 +124,30 @@ const Create = ({ courseid, fetchChapters }) => {
       }
       console.log(err.message);
       setUploading(false);
+      setProgress(0);
     }
   };
 
   const formHandler = (e) => {
     e.preventDefault();
+    setChapter({
+      ...chapter,
+      videourl: videoURL,
+    });
+    let newChapter = {
+      ...chapter,
+      videourl: videoURL,
+    };
     axios
-      .post(`${BASE_URL}/api/courses/${courseid}/newchapter`, chapter, {
+      .post(`${BASE_URL}/api/courses/${courseid}/newchapter`, newChapter, {
         headers: { Authorization: "Bearer " + token },
       })
       .then((res) => {
         setChapter({ title: "", imageurl: "", description: "" });
         setFile("");
+        setShowProgress(false);
         makeToast("Chapter Created", res.data.message, "success");
+
         fetchChapters();
       })
       .catch((err) => {
@@ -111,55 +178,74 @@ const Create = ({ courseid, fetchChapters }) => {
             width="100%"
             position={"relative"}
           >
-            <VStack my="auto">
-              <Input
-                type="file"
-                display="none"
-                onClick={(e) => {
-                  console.log(e.target.value);
-                }}
-                ref={fileInputRef}
-                onChange={(e) => {
-                  setFile(e.target.files[0]);
-                }}
-              />
-              <Button
-                onClick={() => {
-                  fileInputRef.current.click();
-                }}
-                colorScheme="teal"
-                mt="5"
-              >
-                Select File
-              </Button>
-
-              <div>OR</div>
-
-              <Center
-                // color="white"
-                textAlign={"center"}
-                width="100%"
-                height="100%"
-                mb="5"
-              >
-                {file ? (
-                  <Text>
-                    {file.name} <br /> Uploading a large file might take 2-3
-                    minutes.
-                  </Text>
-                ) : !uploading ? (
-                  <Text fontWeight="semibold"> Drag and Drop a File</Text>
+            {showProgress ? (
+              <>
+                {uploaded ? (
+                  <Box py="10">
+                    <Text fontWeight={"semibold"}>
+                      Uploaded Successfully : {file.name}{" "}
+                    </Text>
+                  </Box>
                 ) : (
-                  <>s</>
+                  <Box py="20">
+                    <Text fontWeight={"semibold"}>Uploading : {file.name}</Text>
+                    <Progress
+                      hasStripe
+                      value={progress}
+                      size="lg"
+                      mt="4"
+                      colorScheme="buttons"
+                      isIndeterminate={uploading && progress === 0}
+                    />
+                  </Box>
                 )}
-              </Center>
-            </VStack>
+              </>
+            ) : (
+              <VStack my="auto">
+                <Input
+                  type="file"
+                  display="none"
+                  onClick={(e) => {
+                    console.log(e.target.value);
+                  }}
+                  ref={fileInputRef}
+                  onChange={(e) => {
+                    setFile(e.target.files[0]);
+                    setFile(e.target.files[0]);
+                    setShowProgress(true);
+                    handleUpload(e.target.files[0]);
+                  }}
+                />
+                <Button
+                  onClick={() => {
+                    fileInputRef.current.click();
+                  }}
+                  colorScheme="buttons"
+                  mt="5"
+                >
+                  Select File
+                </Button>
+
+                <div>OR</div>
+
+                <Center
+                  // color="white"
+                  textAlign={"center"}
+                  width="100%"
+                  height="100%"
+                  mb="5"
+                >
+                  <Text fontWeight="semibold"> Drag and Drop a File</Text>
+                </Center>
+              </VStack>
+            )}
           </Box>
+
           <Flex>
             <Spacer />
-            <Button
+            {/* <Button
               mb="7"
-              colorScheme="teal"
+              colorScheme="buttons"
               size="sm"
               mt="3"
               onClick={() => {
@@ -168,7 +254,7 @@ const Create = ({ courseid, fetchChapters }) => {
               isLoading={uploading}
             >
               Upload
-            </Button>
+            </Button> */}
           </Flex>
         </Box>
         <form onSubmit={formHandler}>
@@ -179,7 +265,10 @@ const Create = ({ courseid, fetchChapters }) => {
               placeholder="Chapter Title"
               value={chapter.title}
               onChange={(e) => {
-                setChapter({ ...chapter, title: e.target.value });
+                setChapter({
+                  ...chapter,
+                  title: e.target.value,
+                });
               }}
             />
             <Textarea
@@ -193,11 +282,12 @@ const Create = ({ courseid, fetchChapters }) => {
             />
           </FormControl>
           <Button
-            colorScheme="teal"
+            colorScheme="buttons"
             size="sm"
             float="right"
             mt="5"
             type="submit"
+            isDisabled={!uploaded}
           >
             Create
           </Button>

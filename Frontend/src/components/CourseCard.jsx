@@ -64,16 +64,36 @@ const CourseCard = ({ course, buttonText, link }) => {
     // navigate(course._id.toString());
   };
 
+  // // {    #4A4A4A
+  //     #333333
+  //     #2C3E50
+  //     #424242
+  //     #2E4053}
+
   return (
     <Box
-      width="250px"
-      backgroundColor={"gray.700"}
-      border="1px solid"
-      color="gray.200"
+      flex={"1"}
+      minW="280px"
+      maxW="300px"
+      backgroundColor={"#F6F4E2"}
+      // backgroundColor={"customTwo.600"}
+      boxShadow={"2xl"}
+      borderRadius={"12"}
+      // border="1px solid"
+      color="black"
       minH={"200px"}
+      p="3"
     >
       <VStack height="100%">
-        <Image src={imageurl} width="100%" height="112px" objectFit="cover" />
+        <Image
+          src={imageurl}
+          width="100%"
+          height="112px"
+          objectFit="cover"
+          borderTopRadius={12}
+          boxShadow={"lg"}
+          mb="2"
+        />
         <Box width="100%" px="2" pb="3" pt="2" height="100%">
           <Flex direction={"column"} height="100%">
             <Text fontSize={"lg"} fontWeight={"semibold"}>
@@ -87,8 +107,9 @@ const CourseCard = ({ course, buttonText, link }) => {
             <Button
               mt="2"
               float="right"
-              colorScheme="teal"
-              size="sm"
+              colorScheme="buttons"
+              size="md"
+              width="50%"
               onClick={manageButtonHandler}
             >
               {buttonText}

@@ -7,6 +7,7 @@ import ManageCourses from "./routes/ManageCourses";
 import MyLearning from "./routes/MyLearning";
 import CourseDetail from "./routes/CourseDetail";
 import ViewCourse from "./routes/ViewCourse";
+import { Helmet } from "react-helmet";
 // import CreateCourse from "./routes/CreateCourse";
 
 const router = createBrowserRouter([
@@ -53,6 +54,9 @@ function App() {
 
   return (
     <>
+      <Helmet>
+        <link rel="icon" type="image/png" href="/images/favicon2.png" />
+      </Helmet>
       <RouterProvider router={router} />
     </>
   );

@@ -55,51 +55,53 @@ const ChapterCard = ({ fetchChapters, courseid, chapterObj, index }) => {
       <Box
         my="4"
         mx="2"
-        minH="90px"
+        minH={{ base: "120px", md: "90px", lg: "90px" }}
         maxH="120px"
         width="96%"
-        // overflow="hidden"
+        background="white"
         minW="350px"
         borderRadius="8px"
         boxShadow="lg"
-        border={"1px solid"}
+        border="1px solid"
         borderColor="gray.400"
         pb=".5"
       >
-        <HStack height={"100%"}>
-          <Box px="4" pt="2" width="80%">
+        <HStack height="100%">
+          <Box px="4" pt="2" width={{ base: "80%", md: "100%", lg: "100%" }}>
             <HStack>
               <Box
                 mb="2"
-                minW="100px"
+                minW={{ base: "100px", md: "150px", lg: "150px" }}
                 minH="100px"
-                width="150px"
+                width={{ base: "100px", md: "150px", lg: "150px" }}
                 height="100px"
                 pt="2.5"
                 pb="5"
-                // background="yellow"
                 mr="1"
               >
                 <video
                   style={{
-                    width: "150px",
+                    width: "100%",
                     height: "80px",
                     objectFit: "cover",
                     overflowY: "hidden",
                   }}
                   src={videourl}
+                  controls // You can add controls for video playback
                 />
               </Box>
               <Box>
-                <Text fontSize={"lg"} fontWeight={"semibold"}>
+                <Text
+                  fontSize={{ base: "lg", md: "lg", lg: "lg" }}
+                  fontWeight="semibold"
+                >
                   {"Chapter " + index + ":"} {title}
                 </Text>
                 <Text
-                  //   background="pink"
                   mb="2"
-                  fontSize="md"
+                  fontSize={{ base: "md", md: "sm", lg: "md" }}
                   width="100%"
-                  maxH="80px" // Set the maximum height for truncation
+                  maxH="80px"
                   overflow="hidden"
                   position="relative"
                 >
@@ -109,7 +111,7 @@ const ChapterCard = ({ fetchChapters, courseid, chapterObj, index }) => {
             </HStack>
           </Box>
           <Spacer />
-          <IconButton mr="10" onClick={onDelete}>
+          <IconButton colorScheme="buttons" mr="10" onClick={onDelete}>
             <DeleteIcon />
           </IconButton>
         </HStack>

@@ -12,6 +12,8 @@ import {
   Flex,
   Spacer,
   AspectRatio,
+  AbsoluteCenter,
+  Spinner,
 } from "@chakra-ui/react";
 import {
   Drawer,
@@ -64,91 +66,99 @@ const CourseDetail = () => {
 
   return (
     <>
-      <VStack width="100%" px="10" py="5" maxW="800px">
-        {!isLoading && course ? (
-          <Box
-            width="98%"
+      {!isLoading && course ? (
+        <Center>
+          <VStack
+            width="100%"
+            px={{ base: "4", md: "10" }}
+            py="5"
+            mt="7"
             maxW="800px"
-            height={"150"}
-            my="8"
-            p="2"
-            borderRadius={"5"}
-            boxShadow={"base"}
           >
-            <Box height="100%">
-              <Flex height="100%">
-                <Image
-                  src={course.imageurl}
-                  height="135px"
-                  width="135px"
-                  objectFit={"cover"}
-                  mr={"5"}
-                />
-                <Flex
-                  direction={"column"}
-                  // background="green"
-                  width="100%"
-                  height="100%"
-                  wrap={"nowrap"}
-                >
-                  <Box>
-                    <Text
-                      fontWeight={"bold"}
-                      fontSize={"2xl"}
-                      color={"gray.600"}
-                    >
-                      {course.title}
-                    </Text>
-                    <Text fontWeight={"semibold"} color={"gray.500"}>
-                      {course.description}
-                    </Text>
-                  </Box>
-
-                  <Spacer />
-                  <Box>
-                    <Button float="right" mr="2" size="sm">
-                      Edit
-                    </Button>
-                  </Box>
-                </Flex>
-              </Flex>
-            </Box>
-          </Box>
-        ) : (
-          <>Loading...</>
-        )}
-
-        <Box width="100%">
-          <Button float="right" size="sm" mr="2" onClick={onOpen}>
-            New Chapter
-          </Button>
-        </Box>
-        <VStack
-          backgroundColor={"whiteAlpha.800"}
-          mt="5"
-          width="100%"
-          height="80vh"
-          overflowY={"scroll"}
-        >
-          {!isLoading && course ? (
-            <>
-              {course.chapters.map((item, index) => {
-                return (
-                  <ChapterCard
-                    key={item._id}
-                    fetchChapters={fetchChapters}
-                    courseid={courseid}
-                    chapterObj={item}
-                    index={index}
+            <Box
+              width="98%"
+              maxW="800px"
+              height={{ base: "auto", md: "150px" }}
+              my="8"
+              p="2"
+              borderRadius="5"
+              shadow={"lg"}
+              background="white"
+            >
+              <Box height="100%">
+                <Flex height="100%">
+                  <Image
+                    src={course.imageurl}
+                    height={{ base: "85px", md: "135px" }}
+                    width={{ base: "85px", md: "135px" }}
+                    objectFit="cover"
+                    mr={{ base: "3", md: "5" }}
                   />
-                );
-              })}
-            </>
-          ) : (
-            <>Loading...</>
-          )}
-        </VStack>
-      </VStack>
+                  <Flex
+                    direction="column"
+                    width="100%"
+                    height="100%"
+                    wrap="nowrap"
+                  >
+                    <Box>
+                      <Text
+                        fontWeight="bold"
+                        fontSize={{ base: "xl", md: "2xl" }}
+                        color="gray.600"
+                      >
+                        {course.title}
+                      </Text>
+                      <Text fontWeight="semibold" color="gray.500">
+                        {course.description}
+                      </Text>
+                    </Box>
+                    <Spacer />
+                    <Box>
+                      <Button float="right" mr="2" size="sm">
+                        Edit
+                      </Button>
+                    </Box>
+                  </Flex>
+                </Flex>
+              </Box>
+            </Box>
+
+            <Box width="100%">
+              <Button
+                float="right"
+                size="sm"
+                mr="2"
+                onClick={onOpen}
+                colorScheme="buttons"
+              >
+                New Chapter
+              </Button>
+            </Box>
+
+            <VStack
+              // backgroundColor="whiteAlpha.800"
+              mt="5"
+              width="100%"
+              height={{ base: "60vh", md: "80vh" }}
+              overflowY="scroll"
+            >
+              {course.chapters.map((item, index) => (
+                <ChapterCard
+                  key={item._id}
+                  fetchChapters={fetchChapters}
+                  courseid={courseid}
+                  chapterObj={item}
+                  index={index}
+                />
+              ))}
+            </VStack>
+          </VStack>
+        </Center>
+      ) : (
+        <AbsoluteCenter>
+          <Spinner />
+        </AbsoluteCenter>
+      )}
       <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="sm">
         <DrawerOverlay />
         <DrawerContent color="white" backgroundColor="gray.700">

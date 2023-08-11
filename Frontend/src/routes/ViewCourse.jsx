@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 
 import { useParams } from "react-router-dom";
-import { Center, Flex, HStack, VStack, useToast } from "@chakra-ui/react";
+import {
+  Center,
+  Flex,
+  HStack,
+  Spinner,
+  VStack,
+  useToast,
+  Spacer,
+} from "@chakra-ui/react";
 import { Box, Text } from "@chakra-ui/react";
 import axios from "axios";
 import Plyr from "plyr-react";
@@ -54,78 +62,88 @@ const ViewCourse = () => {
 
   return (
     <>
-      {!isloading && courseDetails ? (
-        <Box height="93vh" width="80%" px="10" py="5">
-          {/* Playing {courseDetails.chapters[0].videourl} */}
-          <Flex height="100%">
-            {/* <Aspectratio ratio={16 / 9} height="360" width="640"> */}
-            <Box padding={"20px"} width="65%" height="65%">
-              {courseDetails ? (
-                <div
-                  style={{
-                    height: "100%",
-                  }}
-                >
-                  <Plyr
-                    source={{
-                      type: "video",
-                      sources: [
-                        {
-                          src: videourl,
-                        },
-                      ],
-                    }}
-                    options={{
-                      ratio: "16:9", // or any other aspect ratio
-                    }}
-                  />
-                </div>
-              ) : (
-                <>Loading...</>
-              )}
-            </Box>
-            {courseDetails ? (
-              <VStack
-                mt="5"
-                gap="2"
-                height="100%"
-                width="40%"
-                px="5"
-                overflowY={"scroll"}
+      {!isloading ? (
+        <Center mt="10">
+          {!isloading && courseDetails ? (
+            <Box height="auto" width="100%" px={{ base: "4", md: "10" }} py="5">
+              <Flex
+                flexDirection={{
+                  base: "column",
+                  md: "column",
+                  lg: "row",
+                }}
+                // background="green"
+                justifyContent="center"
+                alignItems="center"
               >
-                {courseDetails.chapters.map((item, index) => {
-                  return (
+                <Box padding="20px" width="100%" height="auto">
+                  <div style={{ width: "100%" }}>
+                    <Plyr
+                      source={{
+                        type: "video",
+                        sources: [
+                          {
+                            src: videourl,
+                          },
+                        ],
+                      }}
+                      options={{
+                        ratio: "16:9",
+                      }}
+                    />
+                  </div>
+                </Box>
+
+                <Flex
+                  flexDirection={"column"}
+                  // background="green"
+                  mt={{ base: "5", md: "0", lg: "10" }}
+                  gap="2"
+                  height="100vh"
+                  width="100%"
+                  px="5"
+                  overflowY="scroll"
+                  maxH="50vh"
+                >
+                  {courseDetails.chapters.map((item, index) => (
                     <Flex
+                      minH="70px"
+                      borderRadius="10px"
+                      background="white"
                       key={index}
                       onClick={() => {
                         setVideourl(item.videourl);
                       }}
-                      wrap="nowrap"
-                      border={"1px solid"}
-                      boxShadow={"md"}
-                      borderColor={"gray.200"}
-                      //   background="yellow"
-                      height="70px"
+                      border="1px solid"
+                      boxShadow="md"
+                      borderColor="gray.200"
+                      height="auto"
                       width="100%"
-                      alignItems={"center"}
-                      minH="80px"
+                      alignItems="center"
                       px="5"
-                      // justifyContent={"center"}
+                      py="3"
                     >
-                      <Box fontWeight={"semibold"}>
-                        Chapter {index}: {item.title}{" "}
+                      <Box
+                        fontWeight="semibold"
+                        background="white"
+                        width="100%"
+                      >
+                        Chapters {index}: {item.title}
                       </Box>
                     </Flex>
-                  );
-                })}
-              </VStack>
-            ) : (
-              <>Loading...</>
-            )}
-          </Flex>
-        </Box>
+                  ))}
+                  <Spacer />
+                </Flex>
+              </Flex>
+            </Box>
+          ) : (
+            <Box background="yellow" height="100%" width="100%"></Box>
+          )}
+        </Center>
       ) : (
-        <></>
+        <Center height={"100vh"}>
+          <Spinner />
+        </Center>
       )}
     </>
   );

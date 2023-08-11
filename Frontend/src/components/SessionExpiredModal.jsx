@@ -19,11 +19,11 @@ const SessionExpiredModal = ({ isOpen, onOpen, onClose }) => {
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Session Expired</ModalHeader>
-          <ModalCloseButton />
+
           <ModalBody>Please Login again !!!</ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="teal" onClick={onClose}>
+            <Button colorScheme="buttons" onClick={onClose}>
               Okay
             </Button>
           </ModalFooter>

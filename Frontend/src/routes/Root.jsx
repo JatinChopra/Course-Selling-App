@@ -61,9 +61,14 @@ const Root = () => {
     <>
       <UserContext.Provider value={{ userData, setUserData }}>
         <NavigationBar />
-        <Box h="95vh" mt="5vh" pt="5" overflowY={"scroll"}>
+        <Box h="95vh" mt="5vh" overflowY={"scroll"} background="#ECECEC">
           <Center>
-            <Outlet />
+            <Box
+              // background="yellow"
+              width="100%"
+            >
+              <Outlet />
+            </Box>
           </Center>
         </Box>
       </UserContext.Provider>

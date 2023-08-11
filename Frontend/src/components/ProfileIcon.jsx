@@ -54,6 +54,7 @@ const ProfileIcon = ({ data }) => {
             <Button
               size="sm"
               ml="14px"
+              colorScheme="buttons"
               onClick={() => {
                 setToken("");
                 localStorage.removeItem("token");

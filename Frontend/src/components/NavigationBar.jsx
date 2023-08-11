@@ -1,5 +1,5 @@
 import useLocalStorageState from "use-local-storage-state";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 import UserContext from "./contexts/UserContext";
 import { useContext } from "react";
@@ -14,6 +14,8 @@ import {
   Spacer,
   Center,
   Heading,
+  useMediaQuery,
+  Image,
 } from "@chakra-ui/react";
 
 import { useDisclosure } from "@chakra-ui/react";
@@ -49,48 +51,40 @@ const NavigationBar = () => {
     <>
       <Center w="100%">
         <Box
-          w="100%"
+          boxShadow={"lg"}
+          width="100%"
           position={"fixed"}
           zIndex={"4"}
-          height="67px"
-          mt="67px"
-          backgroundColor={"white"}
+          background={"white"}
+          height="76px"
+          mt="76px"
           px="24px"
           borderBottom={"1px solid lightgrey"}
         >
           <Center height="100%">
-            <Box
-              height="100%"
-              width={{
-                base: "100%",
-                md: "100%",
-                lg: "8xl",
-              }}
-            >
+            <Box height="100%" width="100%">
               <Flex alignItems={"center"} height="100%">
-                <Heading mr="5">CsSpace</Heading>
+                <Image
+                  width="70px"
+                  height="70px"
+                  src="/images/logo.jpeg"
+                  mr="7"
+                  ml="5"
+                ></Image>
                 <NavLinkButton text={"Courses"} path={"/"} />
-                <Button
-                  size={"sm"}
-                  variant="link"
-                  mt="1"
-                  sx={{
-                    textDecoration: "none",
-                    ":hover": {
-                      textDecoration: "none",
-                      color: "gray.700",
-                    },
-                  }}
-                >
-                  About us
-                </Button>
+                <NavLinkButton text={"About us"} path="#" />
                 <Spacer />
                 {token ? (
                   <>
                     <ButtonGroup alignItems={"center"}>
                       {userData.isInstructor ? (
                         <Link to={"/manage"}>
-                          <Button size="sm" variant="outline" mt="1">
+                          <Button
+                            colorScheme="buttons"
+                            size="sm"
+                            variant="outline"
+                            mt="1"
+                          >
                             Manage Courses
                           </Button>
                         </Link>
@@ -107,7 +101,7 @@ const NavigationBar = () => {
                         </Button>
                       )}
                       <Link to={"/mylearning"}>
-                        <Button size="sm" mr="2" mt="1">
+                        <Button size="sm" colorScheme="buttons" mr="2" mt="1">
                           My Learning
                         </Button>
                       </Link>
@@ -116,10 +110,20 @@ const NavigationBar = () => {
                   </>
                 ) : (
                   <ButtonGroup>
-                    <Button size="sm" variant="outline" onClick={loginOnOpen}>
+                    <Button
+                      colorScheme="buttons"
+                      size="sm"
+                      variant="outline"
+                      onClick={loginOnOpen}
+                    >
                       Login
                     </Button>
-                    <Button size="sm" variant="solid" onClick={signupOnOpen}>
+                    <Button
+                      size="sm"
+                      variant="solid"
+                      onClick={signupOnOpen}
+                      colorScheme="buttons"
+                    >
                       Signup
                     </Button>
                   </ButtonGroup>

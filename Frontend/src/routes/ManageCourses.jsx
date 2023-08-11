@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { useDisclosure } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/react";
 import axios from "axios";
+import { Spinner } from "@chakra-ui/react";
+import { AbsoluteCenter } from "@chakra-ui/react";
 
 import {
   Drawer,
@@ -35,7 +37,6 @@ const ManageCourses = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setisLoading] = useState(false);
   const [courses, setCourses] = useState([]);
-  const skeletonData = new Array(9).fill("");
   const toast = useToast();
 
   if (!token && !userData) {
@@ -83,49 +84,43 @@ const ManageCourses = () => {
 
   return (
     <>
-      <VStack px="4" py="10" width={"84%"}>
-        <Box width="84%">
-          <Button float="right" onClick={onOpen}>
+      <VStack px="4" py="10" width="100%" mt={{ base: "12", md: "18" }}>
+        <Box width={{ base: "100%", md: "80%" }}>
+          <Button float="right" onClick={onOpen} colorScheme="buttons">
             Create New
           </Button>
         </Box>
         <Flex
-          justifyContent="start"
-          // alignItems={"center"}
-          // background={"pink"}
+          p="10"
+          justifyContent="center"
           width="100%"
           mt="8"
-          flexWrap={"wrap"}
-          gap={"5"}
-
-          // flexDirection="row-reverse"
+          flexWrap="wrap"
+          gap="5"
         >
-          {loading
-            ? skeletonData.map((index) => {
-                return (
-                  <Skeleton>
-                    <Box key={index} width="250px" height="200px" />
-                  </Skeleton>
-                );
-              })
-            : courses.map((course, index) => {
-                // console.log(course);
-                return (
-                  <CourseCard
-                    key={index}
-                    course={course}
-                    buttonText={"Manage"}
-                    link={`${course._id.toString()}`}
-                  />
-                );
-              })}
+          {loading ? (
+            <AbsoluteCenter>
+              <Box width="100%">
+                <Spinner />
+              </Box>
+            </AbsoluteCenter>
+          ) : (
+            courses.map((course, index) => (
+              <CourseCard
+                key={index}
+                course={course}
+                buttonText="Manage"
+                link={`${course._id.toString()}`}
+              />
+            ))
+          )}
         </Flex>
       </VStack>
-      {/* </Flex> */}
 
       <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="sm">
         <DrawerOverlay />
         <DrawerContent color="white" backgroundColor="gray.700">
+          {/* <DrawerContent color="white" backgroundColor="#4CAF50"> */}
           <DrawerCloseButton />
           <DrawerHeader>Create New Course</DrawerHeader>
 

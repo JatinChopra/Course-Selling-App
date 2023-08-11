@@ -6,15 +6,19 @@ const NavLinkButton = ({ text, path }) => {
   return (
     <Link to={path}>
       <Button
-        size="sm"
+        size="lg"
+        fontSize={"lg"}
         variant="link"
-        mr="4"
-        mt="2"
+        color={"gray.500"}
+        // color="#FF9800"
+        fontWeight={"normal"}
+        mr="5"
+        mt="1"
         sx={{
           textDecoration: "none",
           ":hover": {
             textDecoration: "none",
-            color: "gray.700",
+            color: "#03A9F4",
           },
         }}
       >
@@ -25,3 +29,6 @@ const NavLinkButton = ({ text, path }) => {
 };
 
 export default NavLinkButton;
+
+// #1C1CFF
+// #5151FF
